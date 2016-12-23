@@ -1,0 +1,55 @@
+﻿@model MusicStore.ViewModels.SetupViewModel
+@{
+    Layout = "/Views/Shared/_LoyoutSetup.cshtml";
+    ViewBag.Title = "SetupPage";
+}
+<h2>@ViewBag.Title</h2>
+<form asp-controller="Setup" asp-action="Index" method="post" class="form-horizontal">
+    <div class="form-group">
+        <label asp-for="Server" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Server" class="form-control" />
+            <span asp-validation-for="Server" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Port" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Port" class="form-control" value="3306" />
+            <span asp-validation-for="Port" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Username" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Username" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Password" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="ConfirmPassword" class="form-control" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Dbname" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Dbname" class="form-control" />
+            <span asp-validation-for="Dbname" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Save" />
+        </div>
+    </div>
+</form>

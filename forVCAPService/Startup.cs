@@ -7,13 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using MusicStore.Components;
+using MusicStore.Extensions;
 using MusicStore.Models;
 
 namespace MusicStore
 {
     public class Startup
     {
-        //private readonly Platform _platform; Remove line
+        //private readonly Platform _platform;
 
         public Startup(IHostingEnvironment hostingEnvironment)
         {
@@ -21,13 +22,10 @@ namespace MusicStore
             // is found in both the registered sources, then the later source will win. By this way a Local config
             // can be overridden by a different setting while deployed remotely.
             var builder = new ConfigurationBuilder()
-                //.SetBasePath(hostingEnvironment.ContentRootPath) Remove line
-                .AddJsonFile("config.json")
-                //All environment variables in the process's context flow in as configuration values.
-                .AddEnvironmentVariables();
-
+                .AddJsonFile("config.json", optional: true, reloadOnChange: true)
+                .AddVcapServices(); //add line
             Configuration = builder.Build();
-            //_platform = new Platform(); Remove line
+            //_platform = new Platform();
         }
 
         public IConfiguration Configuration { get; private set; }
@@ -36,34 +34,31 @@ namespace MusicStore
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
+
             // Add EF services to the services container
-            //if (_platform.UseInMemoryStore) Remove 10 line
+            //if (_platform.UseInMemoryStore)
             //{
             //    services.AddDbContext<MusicStoreContext>(options =>
             //        options.UseInMemoryDatabase());
             //}
             //else
             //{
-            //    services.AddDbContext<MusicStoreContext>(options =>
-            //        options.UseSqlServer(Configuration[StoreConfig.ConnectionStringKey.Replace("__", ":")]));
             //}
 
-            //Delete 3 line
-            /*string connection = Configuration.GetConnectionString("MySQLConnection");
-            services.AddDbContext<MusicStoreContext>(options =>
-                        options.UseMySql(connection));*/
-            
-            services.AddTransient<MusicStoreContextFactory>();//Add line
-            services.AddTransient(provider => provider.GetService<MusicStoreContextFactory>().CreateApplicationDbContext());//Add line
-            services.AddSingleton<IConfiguration>(sp => Configuration);//Add line
+            services.AddTransient<MusicStoreContextFactory>();
+            services.AddTransient(provider => provider.GetService<MusicStoreContextFactory>().CreateApplicationDbContext());
+
+            services.AddSingleton<IConfiguration>(sp => Configuration);
+
+            ////services.AddDbContext<MusicStoreContext>(options =>
+            //options.UseSqlServer(Configuration.GetConnectionString("MySQLConnection")));
 
             // Add Identity services to the services container
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                     {
                         options.Cookies.ApplicationCookie.AccessDeniedPath = "/Home/AccessDenied";
                     })
-                    .AddEntityFrameworkStores<MusicStoreContext>()
-                    .AddDefaultTokenProviders();
+                    .AddEntityFrameworkStores<MusicStoreContext>();
 
 
             services.AddCors(options =>
@@ -99,6 +94,8 @@ namespace MusicStore
                         authBuilder.RequireClaim("ManageStore", "Allowed");
                     });
             });
+
+            services.AddOptions();
         }
 
         //This method is invoked when ASPNETCORE_ENVIRONMENT is 'Development' or is not defined
@@ -218,8 +215,8 @@ namespace MusicStore
             });
 
             //Populates the MusicStore sample data
-            var context = app.ApplicationServices.GetService<MusicStoreContext>(); //Add line
-            if (context.ProviderSpecified) //Add line
+            var context = app.ApplicationServices.GetService<MusicStoreContext>();
+            if (context.ProviderSpecified)
                 SampleData.InitializeMusicStoreDatabaseAsync(app.ApplicationServices).Wait();
         }
     }

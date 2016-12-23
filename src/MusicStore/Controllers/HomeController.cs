@@ -13,41 +13,55 @@ namespace MusicStore.Controllers
     public class HomeController : Controller
     {
         private readonly AppSettings _appSettings;
+        private readonly MusicStoreContext dbContext; //add line
 
-        public HomeController(IOptions<AppSettings> options)
+        //public HomeController(IOptions<AppSettings> options) DELETE LINE
+        public HomeController(MusicStoreContext context, IOptions<AppSettings> options) //add line
         {
             _appSettings = options.Value;
+            //add 3 line
+            if (context.ProviderSpecified)
+            {
+                dbContext = context;
+            }
         }
         //
         // GET: /Home/
-        public async Task<IActionResult> Index(
-            [FromServices] MusicStoreContext dbContext,
-            [FromServices] IMemoryCache cache)
+        //public async Task<IActionResult> Index([FromServices] MusicStoreContext dbContext,[FromServices] IMemoryCache cache) DELETE LINE
+        public async Task<IActionResult> Index([FromServices] IMemoryCache cache) //add line
         {
-            // Get most popular albums
-            var cacheKey = "topselling";
-            List<Album> albums;
-            if (!cache.TryGetValue(cacheKey, out albums))
-            {
-                albums = await GetTopSellingAlbumsAsync(dbContext, 6);
-
-                if (albums != null && albums.Count > 0)
+            if (dbContext != null)          //add line
+            {                               //add line
+                // Get most popular albums
+                var cacheKey = "topselling";
+                List<Album> albums;
+                if (!cache.TryGetValue(cacheKey, out albums))
                 {
-                    if (_appSettings.CacheDbResults)
+                    albums = await GetTopSellingAlbumsAsync(dbContext, 6);
+
+                    if (albums != null
+                        && albums.Count > 0)
                     {
-                        // Refresh it every 10 minutes.
-                        // Let this be the last item to be removed by cache if cache GC kicks in.
-                        cache.Set(
-                            cacheKey,
-                            albums,
-                            new MemoryCacheEntryOptions()
-                            .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
-                            .SetPriority(CacheItemPriority.High));
+                        if (_appSettings.CacheDbResults)
+                        {
+                            // Refresh it every 10 minutes.
+                            // Let this be the last item to be removed by cache if cache GC kicks in.
+                            cache.Set(
+                                cacheKey,
+                                albums,
+                                new MemoryCacheEntryOptions()
+                                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
+                                    .SetPriority(CacheItemPriority.High));
+                        }
                     }
                 }
-            }
 
-            return View(albums);
+                return View(albums);
+            }                           //add next 5 lines
+            else
+            {
+                return RedirectToAction("Index", "Setup");
+            }
         }
 
         public IActionResult Error()

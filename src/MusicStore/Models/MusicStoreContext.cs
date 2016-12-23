@@ -2,6 +2,7 @@ using System;//add line
 using System.ComponentModel.DataAnnotations.Schema; //add line
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace MusicStore.Models
 {
@@ -36,10 +37,12 @@ namespace MusicStore.Models
         public MusicStoreContext(DbContextOptions<MusicStoreContext> options)
             : base(options)
         {
+            ProviderSpecified = options.Extensions.Any(); //Add line
             // TODO: #639
             //ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
+        public bool ProviderSpecified { get; private set; } //Add property
         public DbSet<Album> Albums { get; set; }
         public DbSet<Artist> Artists { get; set; }
         public DbSet<Order> Orders { get; set; }
