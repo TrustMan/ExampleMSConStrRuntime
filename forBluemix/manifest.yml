@@ -1,0 +1,10 @@
+applications:
+- path: .
+  memory: 2048M
+  instances: 1
+  domain: mybluemix.net
+  name: MusicStoreTest
+  host: MusicStoreTest
+  disk_quota: 2048M
+  services:
+  - ClearDB MySQL Database-my
