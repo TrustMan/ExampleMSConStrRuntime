@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using MusicStore.Components;
+using MusicStore.Components; //add line
 using MusicStore.Models;
 
 namespace MusicStore

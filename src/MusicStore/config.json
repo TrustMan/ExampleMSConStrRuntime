@@ -5,7 +5,7 @@
   },
   "DefaultAdminUsername": "Administrator@test.com",
   "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-  //Delete section "Data"
+  //Delete next sections and delete comments
   "Data": { 
     "DefaultConnection": {
       // Use a shared (and running) LocalDB database when executing in IIS e.g.
@@ -17,5 +17,4 @@
   "ConnectionStrings": {
       "MySQLConnection": "server=YourNameServer,Port;userid=UserName;pwd=Password;database=Namedatabase;"
     }
-	//Change settings for connection string and delete comments
 }
